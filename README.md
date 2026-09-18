@@ -131,7 +131,7 @@ Improve the game logic so the player cannot press the button before the signal
 Create a more compact version of the circuit
 Design a PCB instead of using a breadboard
 
-### Project sttatus
+### Project status
 
 Completed — first Arduino/embedded electronics project
 
