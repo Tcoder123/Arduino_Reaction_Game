@@ -1,0 +1,89 @@
+//Pin definitions
+const int buttonPin = 2;
+const int ledPinGreen = 13;
+const int ledPinRed = 12;
+
+//Led states
+int ledState= LOW;
+int ledRed = HIGH;
+
+//Button states
+int buttonState;
+int lastButtonState = HIGH;
+
+//Reaction Time
+unsigned long startReactionTime = 0;
+
+//Debouncing
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay= 50;
+
+void setup() {
+ pinMode(buttonPin, INPUT_PULLUP);
+ pinMode(ledPinGreen, OUTPUT);
+ pinMode(ledPinRed, OUTPUT);
+
+ //Use an unused analopg input to make the random sequence less predictable
+ randomSeed(analogRead(0));
+
+ Serial.begin(9600);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  //Start a new reaction round when green led is off
+  if (ledState == LOW){
+    reactionLight();  
+    startReactionTime = millis();
+  }
+
+  //Read button and debounce it
+  buttonState = debounceFunction(buttonPin);
+
+  //Button pressed
+  if (buttonState == LOW){
+    reactionResult(startReactionTime);
+
+    //Reset the leds to start a new round
+    ledState = LOW;
+    ledRed = HIGH;
+  }
+
+  digitalWrite(ledPinGreen, ledState);
+  digitalWrite(ledPinRed, ledRed);
+}
+
+
+unsigned long reactionLight(){
+  int randNumb = random(10000);
+  delay(randNumb);
+  digitalWrite(ledPinGreen, HIGH);
+  digitalWrite(ledPinRed, LOW);
+  ledState = HIGH;
+  ledRed = LOW;
+}
+unsigned long reactionResult(unsigned long)){
+  float reactionTime = 0;
+  reactionTime = millis() - startReactionTime;
+  reactionTime = reactionTime / 1000;
+  Serial.print("Your reaction time is: ");
+  Serial.print(reactionTime, 2.0);
+  Serial.println(" seconds.");
+}
+
+//Read the button while filtering electrical bouncing
+int debounceFunction(int buttonPin){
+    int reading = digitalRead(buttonPin);
+
+    if (reading != lastButtonState){
+      lastDebounceTime = millis();
+    }
+
+    if ((millis()- lastDebounceTime) > debounceDelay){
+      if(reading != buttonState){
+        buttonState = reading;
+    lastButtonState = reading;
+    return buttonState;
+        }
+      }
+    }
